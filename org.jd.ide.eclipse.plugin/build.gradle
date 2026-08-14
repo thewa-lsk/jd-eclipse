@@ -1,16 +1,17 @@
 apply plugin: 'java'
 
 repositories {
-	jcenter()
+	mavenLocal()
+	mavenCentral()
 }
 
 configurations {
 	provided
-	compile.extendsFrom provided
+	implementation.extendsFrom provided
 }
 
 dependencies {
-	compile 'org.jd:jd-core:1.0.7'
+	implementation 'org.jd:jd-core:1.2.0'
 	
 	provided 'org.eclipse.core:org.eclipse.core.commands:3.6.0'	
 	provided 'org.eclipse.core:org.eclipse.core.resources:3.7.100'
@@ -53,13 +54,13 @@ dependencies {
 }
 
 compileJava {
-	sourceCompatibility = '1.8'
-	targetCompatibility = '1.8'	
+	sourceCompatibility = '25'
+	targetCompatibility = '25'	
 	source 'src'
 }
 
 jar {
-	archiveName baseName + '_' + version + '.' + extension
+	archiveFileName = "${archiveBaseName.get()}_${version}.${archiveExtension.get()}"
 	manifest {
 		from 'META-INF/MANIFEST.MF'
 	}	
@@ -69,12 +70,12 @@ jar {
 		include 'plugin.xml'
 	}
 	into('lib') {
-		from project.configurations.runtime - project.configurations.provided
+		from project.configurations.runtimeClasspath - project.configurations.provided
 	}
 }
 
 task copyDependencies(type: Copy) {
-	from project.configurations.runtime - project.configurations.provided
+	from project.configurations.runtimeClasspath - project.configurations.provided
 	into 'lib'
 }
 
